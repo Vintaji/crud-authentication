@@ -1,21 +1,38 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+const express = require('express');
 const app = express();
-var corsOptions = {
-  origin: "http://localhost:3000"
-};
-app.use(cors(corsOptions));
-// parse requests of content-type - application/json
-app.use(bodyParser.json());
-// parse requests of content-type - application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
-// simple route
-app.get("/", (req, res) => {
-  res.json({ message: "Bem-vindo a aplicação" });
+const routers = require('./routes/router');
+
+const cors = require('cors');
+app.use(cors());
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+require('./controllers/auth.controller');
+
+app.use(routers);
+
+app.use((req, res, next) => {
+    const error = new Error('Esse endpoint não foi encontrado');
+    error.status = 404;
+    next(error);
 });
-// set port, listen for requests
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}.`);
+
+app.use((req, res, next) => {
+    const error = new Error('Seu token está invalido');
+    error.status = 401;
+    next(error);
+});
+
+app.use((error, req, res, next) => {
+    res.status(error.status || 500);
+    return res.send ({
+        error: {
+            mensagem: error.message
+        }
+    });
+});
+
+app.listen(3001, () => {
+    console.log('API Online');
 });

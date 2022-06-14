@@ -26,7 +26,7 @@ module.exports = {
         res.send(products);
     },
     listProductbyId: async (req, res) => {
-        var id = req.params.id;       
+        const id = req.params.id;       
         const products = await product.findOne({_id: id});
         res.send(products);
     },

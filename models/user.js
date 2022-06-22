@@ -1,7 +1,7 @@
 const mongoose = require('../database/index');
 const bcrypt = require ('bcryptjs');
 
-const TshirtSchema = new mongoose.Schema({
+const Users = new mongoose.Schema({
     name: {
         type: String,
         require: true,
@@ -23,12 +23,12 @@ const TshirtSchema = new mongoose.Schema({
     },
 });
 
-TshirtSchema.pre('save', async function(next) {
+Users.pre('save', async function(next) {
     const hash = await bcrypt.hash(this.password, 10);
     this.password = hash;
     next();
 });
 
-const User = mongoose.model('User', TshirtSchema);
+const User = mongoose.model('User', Users);
 
 module.exports = User;
